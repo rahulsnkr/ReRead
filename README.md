@@ -5,6 +5,7 @@ Web application to proofread documents and derive research-oriented insights.
 ### Dependencies
 
 Run the following command to install the necessary dependencies:-
+
 `pip3 install -r requirements.txt`
 
 ### Instructions to set up server
