@@ -4,25 +4,8 @@ Web application to proofread documents and derive research-oriented insights.
 
 ### Dependencies
 
-**Sumy Summarizer**
-
-`pip install git+git://github.com/miso-belica/sumy.git`
-
-**PyTorch**
-
-`pip3 install http://download.pytorch.org/whl/cpu/torch-0.4.1-cp36-cp36m-linux_x86_64.whl`
-
-`pip3 install torchvision`
-
-**Django Widget Tweaks**  
-
-`pip3 install django-widget-tweaks`
-
-**Gensim**  
-`pip3 install gensim`
-
-**Language-check**  
-`pip3 install language-check`
+Run the following command to install the necessary dependencies:-
+`pip3 install -r requirements.txt`
 
 ### Instructions to set up server
 + Clone the repository
