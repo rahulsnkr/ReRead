@@ -23,7 +23,7 @@ import sys
 
 from sys import argv
 import nltk
-import language_check
+import language_tool_python as language_check
 import feedparser
 # for querying arxiv
 import urllib.request as request
@@ -115,8 +115,8 @@ def grammarChecker(filepath,username):
 
 	s = f.read()
 	tool = language_check.LanguageTool('en-US')
-	matches = tool.check(s)
-	s = language_check.correct(s, matches)
+	# matches = tool.check(s)
+	s = tool.correct(s)
 	f.close()
 
 	new_f = open(out_file, 'w')
@@ -186,13 +186,14 @@ def keywordView(request):
 			file_name = request.GET.get('filename')
 			file_path = ('user/files/' + request.user.username + '/' + file_name)
 			info = get_keyword_info(file_path)
+			print('Collected Google links')
 			papers = get_papers(file_path)
 			print(info)
 			return render(request, 'keyword_extraction.html', {'files':file_list, 'content' : info, 'papers' : papers, 'username':request.user.username})
 
 def get_papers(file_path):
 	word_list = get_keywords(file_path)
-	keyword_string = " ".join(word_list)
+	keyword_string = "%20".join(word_list)
 	paper_dict = get_relevant_papers(keyword_string)
 	# for i, j in paper_dict:
 		# print('{} {}'.format(i, j))
@@ -202,19 +203,22 @@ def get_papers(file_path):
 def get_keywords(file_path):
 	fp = open(file_path, 'r+')
 	content = fp.read()
-	return keywords(content).split()
+	return keywords(content).split()[0:3]
 
 def get_google_links(string):
 	link_list = []
 	string = string.replace(' ', '+')
 	URL = 'https://www.google.com/search?q=' + string
-	page  = requests.get(URL)
+	USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36"
+	headers = {"user-agent" : USER_AGENT}
+	print(URL)
+	page  = requests.get(URL, headers=headers)
 	page_data = page.text
 	page_soup = BeautifulSoup(page_data, 'lxml')
-	links = page_soup.findAll('h3', {'class' : 'r'})
+	links = page_soup.findAll('div', {'class' : 'r'})
 	for link in links:
 		if link.find('a') is not None:
-			link_list.append(link.find('a')['href'][7:])
+			link_list.append(link.find('a')['href'])
 	return link_list[0:3]
 
 def get_keyword_info(FILE_PATH):
@@ -238,7 +242,7 @@ def get_relevant_papers(keyword_string):
 	print('Searching arXiv for %s' % (keyword_string, ))
 
 	query = 'search_query=%s&sortBy=lastUpdatedDate' % (keyword_string)
-
+	print(base_url+query)
 
 	with request.urlopen(base_url+query) as answer:
 		parse = feedparser.parse(answer)

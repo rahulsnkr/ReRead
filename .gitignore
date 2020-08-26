@@ -4,3 +4,4 @@ db.sqlite3
 *.txt
 
 user/files/
+!requirements.txt
